@@ -1,0 +1,14 @@
+name: "My Blog"
+title: "My 5523 Blog"
+description: |
+  Exploring blog posts with 5523
+output_dir: "docs"
+navbar:
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+posts:
+  href:indonesia.html
+output: distill::distill_article

@@ -1,0 +1,50 @@
+---
+title: "Indonesia"
+description: |
+  The CoronaVirus Pandemic
+author:
+  - name: Sajed Sallay
+    url: https://monash/edu
+date: 09-01-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+library(coronavirus)
+library(leaflet)
+library(tidyverse)
+library(lubridate)
+library(visdat)
+library(inspectdf)
+```
+
+
+```{r}
+covid_ow <- read_csv(here::here("data/owid-covid-data.csv"))
+
+
+ow <- covid_ow %>%
+  filter(location == "Indonesia")
+```
+
+
+
+```{r}
+ow %>% 
+  select(location,date,total_cases,new_cases,new_deaths,new_vaccinations) %>%
+  DT::datatable(
+    rownames = TRUE,
+    colnames = c("Country", "Date", "Total Cases", "New Cases", "New Deaths", "New Vaccinations"),
+    options = list(
+      pageLength = 5
+    ),
+    class = 'cell-border stripe'
+  )
+```

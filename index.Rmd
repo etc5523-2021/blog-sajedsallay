@@ -1,0 +1,6 @@
+---
+title: "My Blog"
+site: distill::distill_website
+listing: posts
+---
+This is part of Assignment 1 and Assignment 2. The country of focus is Indonesia and the subject of discussion is the Corona Virus pandemic.
