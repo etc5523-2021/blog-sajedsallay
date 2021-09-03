@@ -14,9 +14,6 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-```
-
-```{r}
 library(coronavirus)
 library(leaflet)
 library(tidyverse)
@@ -28,9 +25,11 @@ library(gt)
 ```
 
 
+
 ```{r}
 covid_ow <- read_csv(here::here("data/owid-covid-data.csv"))
 covid_d <-read_csv(here::here("data/covid_31Aug2021.csv"))
+covid_dk <- read_csv(here::here("data/df-with-provinsi"))
 
 ow <- covid_ow %>%
   filter(location == "Indonesia")
@@ -52,10 +51,9 @@ ow %>%
   )
 ```
 
-The delta strain of the covid19 pandemic has lead to a surge in cases in Indoneisa, on the 17th of July 2021 the country recorded its highest ever increase in cases at 56,757 cases on that given day. The number of deaths peaked at 2,069 cases on the 27th of July while the vaccination roll out has been pressing forward constantly increasing over this time period hitting a peak of 3,087,420 doses administered on the 14th of July 2021. The government has implemented a semi-lock down known as PPKM Darurat, from July 3 2021 in Java and Bali which has been extended to date to help assist the existing healthcare infrastructure as hospitals started to become overwhelmed. As seen in the table below, some districts have been hit severely.
+The delta strain of the covid19 pandemic has lead to a surge in cases in Indoneisa, on the 15th of July 2021 the country recorded its highest ever increase in cases at 56,757 cases on that given day. The number of deaths peaked at 2,069 cases on the 27th of July while the vaccination roll out has been pressing forward constantly increasing over this time period hitting a peak of 3,087,420 doses administered on the 14th of July 2021. The government has implemented a semi-lock down known as PPKM Darurat, from July 3 2021 in Java and Bali which has been extended to date to help assist the existing healthcare infrastructure as hospitals started to become overwhelmed. As seen in the table below, some districts have been hit severely.
 
 ```{r}
-
 covid_d %>%
   arrange(desc(`Cases Per 100,000`)) %>%
   head(5) %>%
@@ -63,6 +61,6 @@ covid_d %>%
          `test per 100,000`,`treatment per 100,000`) %>%
   gt() %>%
   tab_header(title = "Coronavirus In Indonesia",subtitle = "Districts with the Highest Active Cases" ) %>%
-  tab_source_note(md("Source: Indonesia Ministry of Health 2020 https://www.kemkes.go.id/index.php?lg=LN02"))
+  tab_source_note(md("Source: [Indonesia Ministry of Health 2020](https://www.kemkes.go.id/index.php?lg=LN02)"))
 ```
 

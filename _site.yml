@@ -11,4 +11,7 @@ navbar:
       href: about.html
 posts:
   href:indonesia.html
-output: distill::distill_article
+output: 
+  distill::distill_article:
+    toc: true
+    css: style.css 
