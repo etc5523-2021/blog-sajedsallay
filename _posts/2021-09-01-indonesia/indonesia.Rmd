@@ -71,7 +71,7 @@ covid_n %>%
   gt() %>%
    tab_options(table.background.color = "lightcyan") %>%
   tab_header(title = "Coronavirus In Indonesia",subtitle = "Districts with the Highest Active Cases" ) %>%
-  tab_source_note(md("Source: [Indonesia Ministry of Health 2020](https://www.kemkes.go.id/index.php?lg=LN02)"))
+  tab_source_note(md("Source: [Indonesia Ministry of Health 2021](https://www.kemkes.go.id/index.php?lg=LN02)"))
 ```
 
 However, even with the number of cases per 100,000 being as high as they are, the hospitalisations and deaths tend to vary based on location which may indicate that certain areas are better prepared for handling covid19 patients leading to a high recovery rate and low deaths. The region of Bali also however has one of the lowest number of tests carried out per 100,000 people compared to all the other regions that have the highest number of cases, which could indicate that the numbers in Bali may actually be higher than is shown.
