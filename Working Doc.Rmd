@@ -39,7 +39,7 @@ ow <- covid_ow %>%
 ```{r}
 ow %>% 
   select(location,date,total_cases,new_cases,new_deaths,new_vaccinations) %>%
-  DT::datatable(
+  DT::datatable(filter = 'top',
     rownames = TRUE,
     colnames = c("Country", "Date", "Total Cases", "New Cases", "New Deaths", "New Vaccinations"),
     options = list(
