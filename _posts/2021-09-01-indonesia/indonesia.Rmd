@@ -54,7 +54,7 @@ ow %>%
   )
 ```
 
-The delta strain of the covid19 pandemic has lead to a surge in cases in Indoneisa, on the 15th of July 2021 the country recorded its highest ever increase in cases at 56,757 cases on that given day. The number of deaths peaked at 2,069 cases on the 27th of July while the vaccination roll out has been pressing forward constantly increasing over this time period hitting a peak of 3,087,420 doses administered on the 14th of July 2021. The government has implemented a semi-lock down known as PPKM Darurat, from July 3 2021 in Java and Bali which has been extended to date to help assist the existing healthcare infrastructure as hospitals started to become overwhelmed. As seen in the table below, some districts have been hit severely with regions like Bali where you see 39.61 hospitalizations per 100,000 people.
+The delta strain of the covid19 pandemic has lead to a surge in cases in Indoneisa, on the 15th of July 2021 the country recorded its highest ever increase in cases at 56,757 cases on that given day. The number of deaths peaked at 2,069 cases on the 27th of July while the vaccination roll out has been pressing forward constantly increasing over this time period hitting a peak of 3,087,420 doses administered on the 14th of July 2021. The government has implemented a semi-lock down known as PPKM Darurat, from July 3 2021 in Java and Bali which has been extended to date to help assist the existing healthcare infrastructure as hospitals started to become overwhelmed. As seen in the table below, some districts like Bali, have been severly affected with 39.61 hospitalisations per 100,000 people.
 
 ```{r}
 covid_n %>%
@@ -72,4 +72,6 @@ covid_n %>%
   tab_header(title = "Coronavirus In Indonesia",subtitle = "Districts with the Highest Active Cases" ) %>%
   tab_source_note(md("Source: [Indonesia Ministry of Health 2020](https://www.kemkes.go.id/index.php?lg=LN02)"))
 ```
+
+However, even with the number of cases per 100,000 being as high as they are, the hospitalisations and deaths tend to vary based on location which may indicate that certain areas are better prepared for handling covid19 patients leading to a high recovery rate and low deaths. The region of Bali also however has one of the lowest number of tests carried out per 100,000 people compared to all the other regions that have the highest number of cases, which could indicate that the numbers in Bali may actually be higher than is shown.
 

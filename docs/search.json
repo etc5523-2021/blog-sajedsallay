@@ -6,14 +6,14 @@
       "description": "This blog is set up for the purpose of an assignment under ETC 5523: Communicating with data, which is part of the Monash Masters of Business Analytics Course.",
       "author": [],
       "contents": "\n\n\n\n",
-      "last_modified": "2021-09-03T17:13:18+05:30"
+      "last_modified": "2021-09-03T19:02:19+05:30"
     },
     {
       "path": "index.html",
       "title": "My Blog",
       "author": [],
       "contents": "\nThis is part of Assignment 1 for ETC 5523 Communicating with Data. The country of focus is Indonesia and the subject of discussion is the Corona Virus pandemic.\n\n\n\n",
-      "last_modified": "2021-09-03T17:13:19+05:30"
+      "last_modified": "2021-09-03T19:02:20+05:30"
     }
   ],
   "collections": ["posts/posts.json"]
