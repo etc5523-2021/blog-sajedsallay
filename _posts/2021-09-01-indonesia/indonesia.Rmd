@@ -54,7 +54,7 @@ ow %>%
   )
 ```
 
-The delta strain of the covid19 pandemic has lead to a surge in cases in Indoneisa, on the 15th of July 2021 the country recorded its highest ever increase in cases at 56,757 cases on that given day. The number of deaths peaked at 2,069 cases on the 27th of July while the vaccination roll out has been pressing forward constantly increasing over this time period hitting a peak of 3,087,420 doses administered on the 14th of July 2021. The government has implemented a semi-lock down known as PPKM Darurat, from July 3 2021 in Java and Bali which has been extended to date to help assist the existing healthcare infrastructure as hospitals started to become overwhelmed. As seen in the table below, some districts like Bali, have been severly affected with 39.61 hospitalisations per 100,000 people.
+The covid19 delta strain had led to a concerning spread of the virus in Indonesia, on the 15th of July 2021 the country recorded its highest ever increase in cases at 56,757 cases on that given day. The number of deaths peaked at 2,069 cases on the 27th of July while the vaccination roll out has been pressing forward constantly increasing over this time period hitting a peak of 3,087,420 doses administered on the 14th of July 2021. The government has implemented a semi-lock down known as PPKM Darurat, from July 3 2021 in Java and Bali which has been extended to date to help assist the existing healthcare infrastructure as hospitals started to become overwhelmed. As seen in the table below, some districts like Bali, have been severly affected with 39.61 hospitalisations per 100,000 people.
 
 ```{r}
 covid_n %>%
@@ -69,6 +69,7 @@ covid_n %>%
   arrange(desc(`Cases per 100,000`)) %>%
   head(10) %>%
   gt() %>%
+   tab_options(table.background.color = "lightcyan") %>%
   tab_header(title = "Coronavirus In Indonesia",subtitle = "Districts with the Highest Active Cases" ) %>%
   tab_source_note(md("Source: [Indonesia Ministry of Health 2020](https://www.kemkes.go.id/index.php?lg=LN02)"))
 ```
