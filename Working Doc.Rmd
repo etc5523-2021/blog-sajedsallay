@@ -7,10 +7,6 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-
-```{r}
 library(coronavirus)
 library(leaflet)
 library(tidyverse)
@@ -20,8 +16,17 @@ library(inspectdf)
 ```
 
 
+
 ```{r}
 covid_ow <- read_csv(here::here("data/owid-covid-data.csv"))
+covid_j <- read_csv(here::here("data/tabel_id_data.csv"))
+covid_d <-read_csv(here::here("data/covid_31Aug2021.csv"))
+
+
+## remove , and replace with . in covid_j
+
+covid_j <- covid_j %>%
+  pivot_wider(names_from = `Measure Names`, values_from = `Measure Values`)
 
 
 ow <- covid_ow %>%
@@ -42,6 +47,8 @@ ow %>%
     class = 'cell-border stripe'
   )
 ```
+
+
 ```{r}
 ow1 <- ow %>% 
   
@@ -64,15 +71,29 @@ vis_dat(ow1)
 
 ```
 
+
 ```{r}
-library(gt)
-ow1 %>% 
-  select(location,date,total_cases_per_million,
-         new_cases_per_million,total_tests_per_million,
-         hospital_beds_per_million) %>%
-  tail(10) %>%
-  gt() %>%
-  tab_header(title = " Corono Virus In Indonesia",
-             subtitle = " For the year 2021-2022")
+covid_d %>%
+  arrange(desc(`Cases Per 100,000`)) %>%
+  head(5)
+  
+```
+
+
+
+
+
+
+```{r}
+library(kableExtra)
+
+covid_d %>%
+  arrange(desc(`Cases Per 100,000`)) %>%
+  head(5) %>%
+  select(District,`Cases Per 100,000`,`Hospitalisation Per 100,000`,
+         `test per 100,000`,`treatment per 100,000`) %>%
+  kbl() %>%
+    kable_minimal()
+
 ```
 

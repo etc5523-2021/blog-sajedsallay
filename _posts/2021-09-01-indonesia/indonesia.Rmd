@@ -23,12 +23,14 @@ library(tidyverse)
 library(lubridate)
 library(visdat)
 library(inspectdf)
+library(kableExtra)
+library(gt)
 ```
 
 
 ```{r}
 covid_ow <- read_csv(here::here("data/owid-covid-data.csv"))
-
+covid_d <-read_csv(here::here("data/covid_31Aug2021.csv"))
 
 ow <- covid_ow %>%
   filter(location == "Indonesia")
@@ -38,13 +40,29 @@ ow <- covid_ow %>%
 
 ```{r}
 ow %>% 
-  select(location,date,total_cases,new_cases,new_deaths,new_vaccinations) %>%
+  select(date,total_cases,new_cases,new_deaths,new_vaccinations) %>%
+  arrange(desc(date)) %>%
   DT::datatable(
     rownames = TRUE,
-    colnames = c("Country", "Date", "Total Cases", "New Cases", "New Deaths", "New Vaccinations"),
+    colnames = c("Date", "Total Cases", "New Cases", "New Deaths", "New Vaccinations"),
     options = list(
       pageLength = 5
     ),
     class = 'cell-border stripe'
   )
 ```
+
+The delta strain of the covid19 pandemic has lead to a surge in cases in Indoneisa, on the 17th of July 2021 the country recorded its highest ever increase in cases at 56,757 cases on that given day. The number of deaths peaked at 2,069 cases on the 27th of July while the vaccination roll out has been pressing forward constantly increasing over this time period hitting a peak of 3,087,420 doses administered on the 14th of July 2021. The government has implemented a semi-lock down known as PPKM Darurat, from July 3 2021 in Java and Bali which has been extended to date to help assist the existing healthcare infrastructure as hospitals started to become overwhelmed. As seen in the table below, some districts have been hit severely.
+
+```{r}
+
+covid_d %>%
+  arrange(desc(`Cases Per 100,000`)) %>%
+  head(5) %>%
+  select(District,`Cases Per 100,000`,`Hospitalisation Per 100,000`,
+         `test per 100,000`,`treatment per 100,000`) %>%
+  gt() %>%
+  tab_header(title = "Coronavirus In Indonesia",subtitle = "Districts with the Highest Active Cases" ) %>%
+  tab_source_note(md("Source: Indonesia Ministry of Health 2020 https://www.kemkes.go.id/index.php?lg=LN02"))
+```
+
