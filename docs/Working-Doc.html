@@ -624,7 +624,65 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <!--/radix_placeholder_navigation_in_header-->
 <!--radix_placeholder_site_in_header-->
 <style type="text/css">
+/* Importing Google Fonts */ 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap');       /* header */ 
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');          /* normal */ 
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');       /* code */ 
 
+/* -------------------------------------------------------- */ 
+
+/* Set main font */ 
+* {
+  font-family: 'Merriweather', serif;
+  font-weight: 400;
+  font-style: regular;
+}
+
+/* Set headers font */ 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  color: #05192D;
+}
+
+/* Set color for h1 */ 
+h1 {
+    color: #05192D;
+}
+
+/* Add padding for title */ 
+h1.title {
+  padding-bottom: 20px;
+}
+
+/* Set font family for text objects in YAML */ 
+#header h4 {
+  font-family: 'Merriweather', serif;
+}
+
+a:hover {
+  color: #029E40;
+  background-color: #E5E1DA;
+  border-radius: 3px;
+}
+
+/* -------------------------------------------------------- */ 
+
+/* Set background color for body */
+body {
+  background: #F7F3EB;
+}
+
+/* -------------------------------------------------------- */ 
+
+p.caption {
+  margin-top: 10px;
+  color: #029E40;
+}
+
+d-article{
+  margin-top:100px;
+}
 </style>
 <!--/radix_placeholder_site_in_header-->
 

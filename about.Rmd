@@ -1,11 +1,10 @@
 ---
 title: "About this blog"
 description: |
-  Some additional details about the blog
+  This blog is set up for the purpose of an assignment under ETC 5523: Communicating with data, which is part of the Monash Masters of Business Analytics Course.
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-This blog is set up for the purpose of an assignment under ETC 5523: Communicating with data, which is part of the Monash Masters of Business Analytics Course.

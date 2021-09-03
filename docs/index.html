@@ -2041,7 +2041,65 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <script src="site_libs/distill-2.2.21/template.v2.js"></script>
   <!--radix_placeholder_site_in_header-->
   <style type="text/css">
+  /* Importing Google Fonts */ 
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap');       /* header */ 
+  @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');          /* normal */ 
+  @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');       /* code */ 
 
+  /* -------------------------------------------------------- */ 
+
+  /* Set main font */ 
+  * {
+    font-family: 'Merriweather', serif;
+    font-weight: 400;
+    font-style: regular;
+  }
+
+  /* Set headers font */ 
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    color: #05192D;
+  }
+
+  /* Set color for h1 */ 
+  h1 {
+      color: #05192D;
+  }
+
+  /* Add padding for title */ 
+  h1.title {
+    padding-bottom: 20px;
+  }
+
+  /* Set font family for text objects in YAML */ 
+  #header h4 {
+    font-family: 'Merriweather', serif;
+  }
+
+  a:hover {
+    color: #029E40;
+    background-color: #E5E1DA;
+    border-radius: 3px;
+  }
+
+  /* -------------------------------------------------------- */ 
+
+  /* Set background color for body */
+  body {
+    background: #F7F3EB;
+  }
+
+  /* -------------------------------------------------------- */ 
+
+  p.caption {
+    margin-top: 10px;
+    color: #029E40;
+  }
+
+  d-article{
+    margin-top:100px;
+  }
   </style>
   <!--/radix_placeholder_site_in_header-->
 
@@ -2218,9 +2276,7 @@ function init_posts_list() {
 <div class="dt-author">Sajed Sallay</div>
 </div>
 </div>
-<div class="thumbnail">
-<img/>
-</div>
+<div class="thumbnail"></div>
 <div class="description">
 <h2>Indonesia</h2>
 <div class="dt-tags"></div>
@@ -2243,7 +2299,7 @@ function init_posts_list() {
 
 
 <div class="d-article">
-<p>This is part of Assignment 1 for ETC 5523 Communicatinng with Data. The country of focus is Indonesia and the subject of discussion is the Corona Virus pandemic.</p>
+<p>This is part of Assignment 1 for ETC 5523 Communicating with Data. The country of focus is Indonesia and the subject of discussion is the Corona Virus pandemic.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

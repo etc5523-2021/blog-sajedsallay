@@ -4,7 +4,6 @@ description: |
   The CoronaVirus Pandemic
 author:
   - name: Sajed Sallay
-    url: https://monash/edu
 date: 09-01-2021
 output:
   distill::distill_article:
@@ -28,8 +27,8 @@ library(gt)
 
 ```{r}
 covid_ow <- read_csv(here::here("data/owid-covid-data.csv"))
-covid_d <-read_csv(here::here("data/covid_31Aug2021.csv"))
-covid_dk <- read_csv(here::here("data/df-with-provinsi"))
+covid_n <- read_csv(here::here("data/df-with-provinsi.csv"))
+
 
 ow <- covid_ow %>%
   filter(location == "Indonesia")
@@ -39,7 +38,11 @@ ow <- covid_ow %>%
 
 ```{r}
 ow %>% 
-  select(date,total_cases,new_cases,new_deaths,new_vaccinations) %>%
+  mutate(`Total Cases` = scales::comma(total_cases, accuracy= 1),
+         `New Cases` = scales::comma(new_cases, accuracy = 1),
+         `New Deaths` = scales::comma(new_deaths, accuracy = 1),
+         `New Vaccinations` = scales::comma(new_vaccinations, accuracy = 1)) %>%
+  select(date, `Total Cases`, `New Cases`, `New Deaths`, `New Vaccinations`) %>%
   arrange(desc(date)) %>%
   DT::datatable(
     rownames = TRUE,
@@ -51,14 +54,20 @@ ow %>%
   )
 ```
 
-The delta strain of the covid19 pandemic has lead to a surge in cases in Indoneisa, on the 15th of July 2021 the country recorded its highest ever increase in cases at 56,757 cases on that given day. The number of deaths peaked at 2,069 cases on the 27th of July while the vaccination roll out has been pressing forward constantly increasing over this time period hitting a peak of 3,087,420 doses administered on the 14th of July 2021. The government has implemented a semi-lock down known as PPKM Darurat, from July 3 2021 in Java and Bali which has been extended to date to help assist the existing healthcare infrastructure as hospitals started to become overwhelmed. As seen in the table below, some districts have been hit severely.
+The delta strain of the covid19 pandemic has lead to a surge in cases in Indoneisa, on the 15th of July 2021 the country recorded its highest ever increase in cases at 56,757 cases on that given day. The number of deaths peaked at 2,069 cases on the 27th of July while the vaccination roll out has been pressing forward constantly increasing over this time period hitting a peak of 3,087,420 doses administered on the 14th of July 2021. The government has implemented a semi-lock down known as PPKM Darurat, from July 3 2021 in Java and Bali which has been extended to date to help assist the existing healthcare infrastructure as hospitals started to become overwhelmed. As seen in the table below, some districts have been hit severely with regions like Bali where you see 39.61 hospitalizations per 100,000 people.
 
 ```{r}
-covid_d %>%
-  arrange(desc(`Cases Per 100,000`)) %>%
-  head(5) %>%
-  select(District,`Cases Per 100,000`,`Hospitalisation Per 100,000`,
-         `test per 100,000`,`treatment per 100,000`) %>%
+covid_n %>%
+  setNames(c("Main District", "District","Cases per 100,000", "Hospital Patients per 100,000", 
+           "Deaths per 100,000", "Tests per 100,000", "Tracing", "Recoveries per 100,000")) %>%
+  group_by(`Main District`) %>%
+  summarise(`Cases per 100,000` = round(mean(`Cases per 100,000`),2),
+            `Hospitalisations per 100,000` = round(mean(`Hospital Patients per 100,000`),2),
+            `Deaths per 100,000` = round(mean(`Deaths per 100,000`),2),
+            `Tests per 100,000` = round(mean(`Tests per 100,000`),2),
+            `Recoveries per 100,000` = round(mean(`Recoveries per 100,000`),2)) %>%
+  arrange(desc(`Cases per 100,000`)) %>%
+  head(10) %>%
   gt() %>%
   tab_header(title = "Coronavirus In Indonesia",subtitle = "Districts with the Highest Active Cases" ) %>%
   tab_source_note(md("Source: [Indonesia Ministry of Health 2020](https://www.kemkes.go.id/index.php?lg=LN02)"))
