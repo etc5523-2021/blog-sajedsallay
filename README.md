@@ -26,14 +26,14 @@ The relevant blog post for this assessment is in [index].html
 
 This assessment is due Fri Sep 17 2021 11.55PM AEST.
 
-My selected country is [FILL].
+My selected country is [Portugal].
 
 The relevant blog post for this assessment is in [FILL].html
 
-- [ ] Selected a new country
-- [ ] Data Story 1
-- [ ] Data Story 2
-- [ ] Graph 1
-- [ ] Graph 2
-- [ ] Submitted the entire blog to Moodle
+- [x] Selected a new country
+- [x] Data Story 1
+- [x] Data Story 2
+- [x] Graph 1
+- [x] Graph 2
+- [x] Submitted the entire blog to Moodle
 
