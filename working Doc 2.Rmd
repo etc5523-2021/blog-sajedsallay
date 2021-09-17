@@ -1,0 +1,313 @@
+---
+title: "Working Doc Part 2"
+author: "Sajed Sallay"
+date: "9/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(utils)
+library(tidyverse)
+library(plotly)
+library(naniar)
+library(inspectdf)
+library(visdat)
+library(lubridate)
+library(latticeExtra)
+library(patchwork)
+library(ggtext)
+library(extrafont)
+library(colorspace)
+library(showtext)
+library(ggimage)
+library(gganimate)
+library(gifski)
+library(png)
+library(timetk)
+library(tidyr)
+library(ggflags)
+library(leaflet)
+library(ggmap)
+library(countrycode)
+#devtools::install_github("rensa/ggflags")
+```
+
+```{r}
+open_data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
+
+
+oxdata <- readr::read_csv('https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest.csv')
+
+owid <- readr::read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv')
+
+```
+
+
+```{r}
+pdata <- open_data %>%
+  filter(countriesAndTerritories == "Portugal")
+
+poxdata <- oxdata %>%
+  filter(CountryName == "Portugal")
+  
+```
+
+
+
+```{r}
+poxdata %>%
+  vis_miss()
+```
+```{r}
+
+data <- poxdata %>%
+  select(CountryName,Date,`C1_School closing`,`C2_Workplace closing`,
+         `C3_Cancel public events`,`C4_Restrictions on gatherings`,
+         `C5_Close public transport`,`C8_International travel controls`,
+         `E1_Income support`,`H4_Emergency investment in healthcare`,
+         `H5_Investment in vaccines`,`H6_Facial Coverings`,
+         ConfirmedCases,ConfirmedDeaths) %>%
+  mutate(date = ymd(Date)) %>%
+  mutate(week = lubridate::week(date)) %>%
+  select(-Date) %>%
+  select(date,week, everything())
+```
+
+```{r}
+owid %>%
+  filter(location == "Portugal")
+```
+
+
+
+
+
+
+```{r}
+skimr::skim(data)
+```
+
+```{r}
+# --> construct separate plots for each series
+obj1 <- xyplot(ConfirmedCases ~ date, data, type = "l" , lwd=2, col="red")
+obj2 <- xyplot(ConfirmedDeaths ~ date, data, type = "l", lwd=2, col="blue")
+ 
+# --> Make the plot with second y axis AND legend:
+doubleYScale(obj1, obj2, text = c("Number of Conf Cases", "Number of Conf Deaths") , 
+             add.ylab2 = TRUE, col=c("steelblue", "#69b3a2"),use.style=FALSE)
+
+```
+
+```{r}
+
+  ## https://plotly.com/r/cumulative-animations/
+
+fig <- data %>%
+  filter(date >= as.Date("2021-01-01")) %>%
+  mutate(days = seq(1, 260,1)) %>%
+  plot_ly(
+    x = ~ConfirmedDeaths, 
+    y = ~ConfirmedCases,
+    frame = ~days, 
+    type = 'scatter',
+    mode = 'markers'
+  )
+
+fig
+```
+
+
+
+```{r}
+# facet plot EDA
+
+data %>%
+  filter(date >= as.Date("2021-01-01")) %>%
+  mutate(days = seq(1, 259,1)) %>%
+  ggplot(aes(x = ConfirmedDeaths,
+             y = ConfirmedCases)) +
+  geom_line(aes(alpha = 0.8)) +
+  geom_image(image = "data/syringe.png") +
+  transition_reveal(days)
+```   
+
+
+
+
+
+```{r}
+owid %>%
+  filter(location == "Portugal") %>%
+  filter(date >= as.Date("2021-01-01")) %>%
+  mutate(days = seq(1, 258,1)) %>%
+  fill(people_vaccinated, .direction = "down") %>%
+  ggplot(aes(x = date,
+             y = people_vaccinated)) +
+  geom_line() +
+  geom_image(image = "data/syringe.png",size = 0.1) +
+  transition_reveal(days) +
+             theme_minimal() +
+  theme(plot.background    = element_rect(fill = "#168aad"),
+                   line               = element_line(color = "white"),
+                   text               = element_text(color = "white"),
+        axis.title.y = element_text(color = "white",
+                                    size = 12,
+                                    face = "bold"),
+        axis.text.y        = element_text(color = "#e5d8bd",
+                                                     size = 11,
+                                                     angle = 90,
+                                                     vjust = -1.5,
+                                                     hjust = 0.5,
+                                                     face = "bold"),
+        axis.text.x        = element_text(color = "#e5d8bd",
+                                                     size = 13)) +
+             labs(title   = "The Vaccination Drive in Portugal",
+                  caption = "source: Our World in Data",
+                  y = 'People Vaccinated',
+                  x = "Date")
+```
+
+
+
+
+
+```{r}
+eurozone = c("Austria", "Belgium", "Cyprus", "Estonia", "Finland", "France", "Germany", "Greece", "Ireland", "Latvia", "Lituania", "Luxembourg", "Malta", "Netherlands", "Portugal", "Slovakia", "Slovenia", "Spain")
+
+rank_euro <-owid %>%
+  filter(location %in% eurozone, 
+         population >= 10000000, 
+         date >= as.Date("2021-01-01")) %>%
+  mutate(month = month(date)) %>%
+  group_by(location, month) %>%
+  summarise(monthly_new_cases = sum(new_cases_per_million)) %>%
+  ungroup() %>%
+  relocate(month)%>%
+  group_by(month)%>%
+  arrange(desc(monthly_new_cases), .by_group = TRUE) %>%
+  ungroup() %>%
+  mutate(rank = rep(1:7,9)) %>%
+  mutate(prev_rank = lag(rank)) %>%
+  mutate(final_rank =rep(1:7,9)) %>%
+  ungroup()
+
+```
+
+
+
+```{r}
+temp_levels <- rank_euro %>% 
+  filter(month == 1) %>% 
+  mutate(region = factor(location)) %>% 
+  mutate(region = fct_reorder(region, final_rank))
+rank_euro1 <- rank_euro %>% 
+  mutate(region = factor(location, levels = temp_levels$region))
+rank_euro1$country <- countrycode(rank_euro$location, "country.name", "iso2c")
+rank_euro1 <- rank_euro1 %>% mutate(country = str_to_lower(country))
+```
+
+```{r}
+rank_animaate <- rank_euro1 %>% 
+  filter(month >= 1) %>% 
+  ggplot(., aes(x = month, y = final_rank, color = region)) +
+  geom_point(aes(group = seq_along(final_rank), color = region), size = 4) +
+  geom_line(aes(color = region,alpha = 2), size = 2) +
+  scale_x_continuous(breaks = seq(1, 9, 1))+
+  scale_y_reverse(breaks = seq(1, 10, 1))+ 
+  ggtitle("Countries")+
+    ylab("Rank")+
+  theme_minimal() +
+  geom_image(image = "data/euro.png",size = 0.1) +
+  transition_reveal(month)  +
+  theme(plot.background    = element_rect(fill = "#168aad"),
+                   line               = element_line(color = "white"),
+                   text               = element_text(color = "white"),
+        axis.title.y = element_text(color = "white",
+                                    size = 12,
+                                    face = "bold"),
+        axis.text.y        = element_text(color = "#e5d8bd",
+                                                     size = 11,
+                                                     angle = 90,
+                                                     vjust = -1.5,
+                                                     hjust = 0.5,
+                                                     face = "bold"),
+        axis.text.x        = element_text(color = "#e5d8bd",
+                                                     size = 13)) +
+             labs(title   = "Countries With Highest Cases Monthly for the year 2021",
+                  caption = "source: Our World in Data",
+                  y = 'Rank',
+                  x = "Month")
+
+final.animated <- animate(rank_animaate, renderer = gifski_renderer("olympics.gif"), width = 8, height = 5, units = "in", res = 300, dev= "png", end_pause = 10)
+```
+
+```{r}
+rank_euro1 %>% 
+  filter(month >= 1) %>% 
+  ggplot(., aes(x = month, y = final_rank, color = region)) +
+  geom_point(aes(group = seq_along(final_rank), color = region), size = 4) +
+  geom_line(aes(color = region, alpha=1), size = 2) +
+  scale_x_continuous(breaks = seq(1, 9, 1))+
+  scale_y_reverse(breaks = seq(1, 10, 1))+ 
+  ggtitle("Countries")+
+    ylab("Rank")+
+  theme_minimal()+
+  ggflags::geom_flag(data = rank_euro1 %>%
+                       filter(month == 1),
+                     aes(country = team_country),
+            size = 8)
+```
+
+
+
+
+```{r}
+owid %>% 
+  filter(location == "Portugal") %>%
+  mutate(`Total Cases` = scales::comma(total_cases, accuracy= 1),
+         `New Cases` = scales::comma(new_cases, accuracy = 1),
+         `New Deaths` = scales::comma(new_deaths, accuracy = 1),
+         `New Vaccinations` = scales::comma(new_vaccinations, accuracy = 1)) %>%
+  select(date, `Total Cases`, `New Cases`, `New Deaths`, `New Vaccinations`) %>%
+  arrange(desc(date)) %>%
+  DT::datatable(filter = 'top',
+    rownames = TRUE,
+    colnames = c("Date", "Total Cases", "New Cases", "New Deaths", "New Vaccinations"),
+    options = list(
+      pageLength = 5
+    ),
+    class = 'cell-border stripe'
+  )
+```
+
+```{r}
+
+#world_data <- ggplot2::map_data('world')
+
+#world_data %>% 
+#  filter(region %in% eurozone) %>%
+#  leaflet() %>%
+ # addCircles(lat = ~ lat, lng = ~ long)
+  
+```
+
+
+
+```{r}
+
+
+```
+
+```{r}
+
+portugal_map <- get_stamenmap(
+  bbox = c(left= -19.951, bottom = 29.344 , right =27.949 , top = 52.988),
+  maptype = "terrain",
+  zoom = 5
+)
+
+ggmap(portugal_map) 
+  
+```
+
