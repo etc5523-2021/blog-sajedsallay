@@ -1,5 +1,5 @@
 ---
-title: "Portugal"
+title: "Blogpost 2: The Coronavirus in Portugal"
 description: |
   The CoronaVirus Pandemic
 author:
@@ -116,17 +116,6 @@ As seen in the figure above, looking at countries in the `Eurozone` containing a
 
 
 # Portugal
-
-```{r map}
-portugal_map <- get_stamenmap(
-  bbox = c(left= -19.951, bottom = 29.344 , right =27.949 , top = 52.988),
-  maptype = "terrain",
-  zoom = 5
-)
-
-ggmap(portugal_map) 
-  
-```
 
 My second topic of focus is the country of `Portugal` that is in the `Eurozone`, `Portugal` shares a land border with `Spain` and is in close proximity to `France` and `Morocco`. With a population of 10.28 million people and a GDP per capita of `$25,065` it is considered a high income country. However, due to the financial crisis of 2011,  Portugal is one of the countries that needed a Euro 78 Billion bail out in 2011 from the European Union(EU).
 With  one of the highest rankings in the world for public health, ahead of England and Sweden, the handling of the pandemic was one of the challenges that would push the healthcare infrastructure of Portugal to its limits. 

@@ -4,4 +4,4 @@ site: distill::distill_website
 listing: posts
 ---
 This is part of Assignment 1 for ETC 5523 Communicating with Data. 
-The country of focus is Indonesia and the subject of discussion is the Corona Virus pandemic.
+The topic of focus is the Corona Virus pandemic.
