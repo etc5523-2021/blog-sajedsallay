@@ -1,0 +1,292 @@
+---
+title: "Portugal"
+description: |
+  The CoronaVirus Pandemic
+author:
+  - name: Sajed Sallay
+date: 09-17-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(utils)
+library(tidyverse)
+library(plotly)
+library(naniar)
+library(inspectdf)
+library(visdat)
+library(lubridate)
+library(latticeExtra)
+library(patchwork)
+library(ggtext)
+library(extrafont)
+library(colorspace)
+library(showtext)
+library(ggimage)
+library(gganimate)
+library(gifski)
+library(png)
+library(timetk)
+library(tidyr)
+library(leaflet)
+library(ggmap)
+library(countrycode)
+library(distill)
+library(patchwork)
+```
+
+```{r data}
+
+owid <- readr::read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv')
+
+```
+
+
+
+# New Cases in the European Union (EU)
+```{r owid}
+
+eurozone <- c("Austria", "Belgium", "Cyprus", "Estonia", "Finland", "France", "Germany", "Greece", "Ireland", "Latvia", "Lituania", "Luxembourg", "Malta", "Netherlands", "Portugal", "Slovakia", "Slovenia", "Spain")
+
+rank_euro <- owid %>%
+  filter(location %in% eurozone, 
+         population >= 10000000, 
+         date >= as.Date("2021-01-01")) %>%
+  mutate(month = month(date)) %>%
+  group_by(location, month) %>%
+  summarise(monthly_new_cases = sum(new_cases_per_million)) %>%
+  ungroup() %>%
+  relocate(month)%>%
+  group_by(month)%>%
+  arrange(desc(monthly_new_cases), .by_group = TRUE) %>%
+  ungroup() %>%
+  mutate(rank = rep(1:7,9)) %>%
+  mutate(prev_rank = lag(rank)) %>%
+  mutate(final_rank =rep(1:7,9)) %>%
+  ungroup()
+
+
+temp_levels <- rank_euro %>% 
+  filter(month == 1) %>% 
+  mutate(region = factor(location)) %>% 
+  mutate(region = fct_reorder(region, final_rank))
+
+rank_euro1 <- rank_euro %>% 
+  mutate(region = factor(location, levels = temp_levels$region))
+
+rank_euro1$country <- countrycode(rank_euro$location, "country.name", "iso2c")
+rank_euro1 <- rank_euro1 %>% mutate(country = str_to_lower(country))
+
+rank_euro1 %>% 
+  filter(month >= 1) %>% 
+  ggplot(., aes(x = month, y = final_rank, color = region)) +
+  geom_point(aes(group = seq_along(final_rank), color = region), size = 4) +
+  geom_line(aes(color = region), size = 2) +
+  scale_x_continuous(breaks = seq(1, 9, 1))+
+  scale_y_reverse(breaks = seq(1, 10, 1))+ 
+  ggtitle("Countries")+
+    ylab("Rank")+
+  theme_minimal() +
+  geom_image(image = "data/euro.png",size = 0.1) +
+  transition_reveal(month)  +
+  theme(plot.background    = element_rect(fill = "#168aad"),
+                   line               = element_line(color = "white"),
+                   text               = element_text(color = "white"),
+        axis.title.y = element_text(color = "white",
+                                    size = 12,
+                                    face = "bold"),
+        axis.text.y        = element_text(color = "#e5d8bd",
+                                                     size = 11,
+                                                     angle = 90,
+                                                     vjust = -1.5,
+                                                     hjust = 0.5,
+                                                     face = "bold"),
+        axis.text.x        = element_text(color = "#e5d8bd",
+                                                     size = 13)) +
+             labs(title   = "Countries With Highest Cases Monthly for the year 2021",
+                  caption = "source: Our World in Data",
+                  y = 'Rank',
+                  x = "Month")
+```
+
+As seen in the figure above, looking at countries in the `Eurozone` containing a population of more than 10 million people for the year of 2021, `Portugal` actually had the highest number of `monthly cases` in `January 2021`, But by `March` the country had managed to rank the lowest of the 7 countries due to strict measures that were implemented before then shortly rebounding to the number 1 rank and ending currently at number five. For the European countries mentioned, `France` has been at the number 1 spot for 3 of the 9 months of observation, while `Germany` has kept a relatively low rank managing to stay at rank number 7 for three months and not going higher than rank number 4.
+
+
+# Portugal
+
+```{r map}
+portugal_map <- get_stamenmap(
+  bbox = c(left= -19.951, bottom = 29.344 , right =27.949 , top = 52.988),
+  maptype = "terrain",
+  zoom = 5
+)
+
+ggmap(portugal_map) 
+  
+```
+
+My second topic of focus is the country of `Portugal` that is in the `Eurozone`, `Portugal` shares a land border with `Spain` and is in close proximity to `France` and `Morocco`. With a population of 10.28 million people and a GDP per capita of `$25,065` it is considered a high income country. However, due to the financial crisis of 2011,  Portugal is one of the countries that needed a Euro 78 Billion bail out in 2011 from the European Union(EU).
+With  one of the highest rankings in the world for public health, ahead of England and Sweden, the handling of the pandemic was one of the challenges that would push the healthcare infrastructure of Portugal to its limits. 
+
+```{r porttable}
+owid %>% 
+  filter(location == "Portugal") %>%
+  mutate(`Total Cases` = scales::comma(total_cases, accuracy= 1),
+         `New Cases` = scales::comma(new_cases, accuracy = 1),
+         `New Deaths` = scales::comma(new_deaths, accuracy = 1),
+         `New Vaccinations` = scales::comma(new_vaccinations, accuracy = 1)) %>%
+  select(date, `Total Cases`, `New Cases`, `New Deaths`, `New Vaccinations`) %>%
+  arrange(desc(date)) %>%
+  DT::datatable(filter = 'top',
+    rownames = TRUE,
+    colnames = c("Date", "Total Cases", "New Cases", "New Deaths", "New Vaccinations"),
+    options = list(
+      pageLength = 5
+    ),
+    class = 'cell-border stripe'
+  )
+```
+The table shows the total number of cases for Portugal as at 09th September 2021 which stands at 1,509,409. This figure remarkable indicates that at least 10% of the population of Portugal has been infected at some point. However, even though the new number of cases per day has hit 16,435 Portugal has not recorded over 303 deaths per day which may indicate that adequate measures were taken in order to prevent a more serious loss of life.
+
+## Number of new cases daily
+
+```{r newcases}
+##Due to github constantly updating 
+prow<- owid %>%
+  filter(location == "Portugal") %>%
+  filter(date >= as.Date("2021-01-01"))
+
+#Create an animation for NewCases 
+owid %>%
+  filter(location == "Portugal") %>%
+  filter(date >= as.Date("2021-01-01")) %>%
+  mutate(days = seq(1, nrow(prow),1)) %>%
+  ggplot(aes(x = date,
+             y = new_cases)) +
+  geom_line() +
+  geom_image(image = "data/virus.png",size = 0.1) +
+  transition_reveal(days) +
+             theme_minimal() +
+  theme(plot.background    = element_rect(fill = "#168aad"),
+                   line               = element_line(color = "white"),
+                   text               = element_text(color = "white"),
+        axis.title.y = element_text(color = "white",
+                                    size = 12,
+                                    face = "bold"),
+        axis.text.y        = element_text(color = "#e5d8bd",
+                                                     size = 11,
+                                                     angle = 90,
+                                                     vjust = -1.5,
+                                                     hjust = 0.5,
+                                                     face = "bold"),
+        axis.text.x        = element_text(color = "#e5d8bd",
+                                                     size = 13)) +
+             labs(title   = "Number of Daily New Cases in Portugal from January 2021",
+                  caption = "source: Our World in Data",
+                  y = 'New Cases',
+                  x = "Date")
+
+```
+As dicussed earlier, Portugal had a sudden surge of new cases in early 2021 and it reached a peak of over 16,000 cases per day. However, with swift lockdown measures and other regulations enforeced to stem the spread, there was a steep decline in the number of cases per day which allowed healthcare infrastruture to recover and prepare for any further outbreaks.
+
+## Number of deaths daily 
+```{r deaths}
+##Due to github constantly updating 
+#Create an animation for deaths 
+owid %>%
+  filter(location == "Portugal") %>%
+  filter(date >= as.Date("2021-01-01")) %>%
+  mutate(days = seq(1, nrow(prow),1)) %>%
+  ggplot(aes(x = date,
+             y = new_deaths)) +
+  geom_line() +
+  transition_reveal(days) +
+             theme_minimal() +
+  theme(plot.background    = element_rect(fill = "#168aad"),
+                   line               = element_line(color = "white"),
+                   text               = element_text(color = "white"),
+        axis.title.y = element_text(color = "white",
+                                    size = 12,
+                                    face = "bold"),
+        axis.text.y        = element_text(color = "#e5d8bd",
+                                                     size = 11,
+                                                     angle = 90,
+                                                     vjust = -1.5,
+                                                     hjust = 0.5,
+                                                     face = "bold"),
+        axis.text.x        = element_text(color = "#e5d8bd",
+                                                     size = 13)) +
+             labs(title   = "Number of deaths per Day in Portugal",
+                  caption = "source: Our World in Data",
+                  y = 'Number of deaths ',
+                  x = "Date")
+
+```
+
+Following the rapid number of cases per day in the early part of 2021, as we can see from the graph the hospital systems started to become overwhelmed and the healthcare infrastructure wasn't able to stem the death toll from rapidly rising as resources were stretched. This chart may indicate how closely linked the number of new cases are to the rising death toll given that hospitals werent able to provide adequate treatment when there are such high numbers of cases. This also indicates the need for managing outbreaks and also pushing forward with vaccinations in order to prevent serious hospitalisation and provide care for those who fall seriously ill.
+
+## Number of people vaccinated daily
+```{r}
+
+#Create an animation for vaccintions
+owid %>%
+  filter(location == "Portugal") %>%
+  filter(date >= as.Date("2021-01-01")) %>%
+  mutate(days = seq(1, nrow(prow),1)) %>%
+  fill(people_vaccinated, .direction = "down") %>%
+  ggplot(aes(x = date,
+             y = people_vaccinated)) +
+  geom_line() +
+  geom_image(image = "data/syringe.png",size = 0.1) +
+  transition_reveal(days) +
+             theme_minimal() +
+  theme(plot.background    = element_rect(fill = "#168aad"),
+                   line               = element_line(color = "white"),
+                   text               = element_text(color = "white"),
+        axis.title.y = element_text(color = "white",
+                                    size = 12,
+                                    face = "bold"),
+        axis.text.y        = element_text(color = "#e5d8bd",
+                                                     size = 11,
+                                                     angle = 90,
+                                                     vjust = -1.5,
+                                                     hjust = 0.5,
+                                                     face = "bold"),
+        axis.text.x        = element_text(color = "#e5d8bd",
+                                                     size = 13)) +
+             labs(title   = "The Vaccination Drive in Portugal",
+                  caption = "source: Our World in Data",
+                  y = 'People Vaccinated',
+                  x = "Date (2021)")
+```
+
+The above figure plots the number of people that are fully vaccinated from the start of the vaccination drive in Portugal in January 2021. As we notice from the figure, from April 2021, the number of people fully vaccinated starts to increase sharply this was also coinciding with the rapid number of cases in the country which may have given incentive for people to get vaccinated and protect themselves from the pandemic. With a population willing to take the vaccine and securing adequate supplies of the vaccines, Portugal, ss of September 2021, has over 8 million people that are fully vaccinated in or 80% of its population (Reuters, 2021).
+
+
+# Conclusion
+
+As seen in the report, even with one of the best public healthcare infrastructures in the world, Portugal still struggled with dealing with the Corona Virus pandemic. With proper planning and execution of measures required to secure an adequate and long term vaccine supply the country has managed to bring down the number of new cases and deaths to acceptable levels for a pandemic. With a population that took up healthcare advice and dealt with a major outbreak, it shows that this may have been a required push in order for more people to take up the vaccine allowing Portugal to achieve a 80% vaccination rate so quickly while others have struggled.
+
+
+# References
+
+<!-- - Application of accurate and consistent APA 6th style (10%) -->
+<!-- [Guide to APA 6th style] (https://oldi.lipi.go.id/public/APA-References.pdf) -->
+
+### Data
+
+OurWorldinData. (2021).[Dataset]. Retrieved from https://github.com/owid.
+
+### Journals and Article
+Reuters. (2021). "Portugal fully vaccinates 80% of population against COVID-19"., Retrieved from https://www.reuters.com/world/europe/portugal-fully-vaccinates-80-population-against-covid-19-2021-09-15/
+
+### Software and packages
+
+R Foundation for Statistical Computing. (2020). R: A language and environment for statistical computing (R Version `r R.version$major`.`r R.version$minor`). [Application Software]. Retrieved from https://www.R-project.org/.
+
+Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L.D., François, R., Grolemund, G., Hayes, A., Henry, L., Hester, J., Kuhn, M., Pedersen, T.L., Miller, E., Bache, S.M., Müller, K., Ooms, J., Robinson, D., Seidel, D.P., Spinu, V., Takahashi, K., Vaughan, D., Wilke, C., Woo, K., and Yutani, H. (2019). Tidyverse (Version `r packageVersion("tidyverse")`). [R Package]. Retrieved from https://doi.org/10.21105/joss.01686.
+
+
